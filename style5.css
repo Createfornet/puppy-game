@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  /* display: flex;
+  justify-content: center;
+  align-iquerySelectortems: center; */
+  height: 100vh;
+  position: relative;
+  /* overflow: hidden; */
+}
+canvas {
+  /* background-color: #ddd; */
+  background: linear-gradient(to bottom, red, green, blue);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10
+}
+.collision{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  opacity: 0;
+}
