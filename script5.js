@@ -27,7 +27,7 @@ class Raven {
     this.height = this.spriteHeight * this.sizeModifier;
     this.x = canvas_width;
     this.y = Math.random() * (canvas_height - this.height);
-    this.directionX = Math.random() * 5 + 3;
+    this.directionX = Math.random() * 5 + 2;
     this.directionY = Math.random() * 5 - 2.5;
     this.markForDelition = false;
     this.img = new Image();
@@ -42,6 +42,7 @@ class Raven {
       Math.floor(Math.random() * 255),
     ];
     this.color = `rgb(${this.rgb[0]}, ${this.rgb[1]}, ${this.rgb[2]}`;
+    this.hasTrail = Math.random() > .5
   }
   update(deltaTime) {
     // collision to up or down
@@ -58,10 +59,11 @@ class Raven {
       Math.floor(this.timeSinceFlap / this.flapInterval) % this.maxFrame;
     this.timeSinceFlap += deltaTime;
 
-    particles.push(new Partcle(this.x, this.y, this.width, this.color));
-
     // game over
     if (this.x + this.width < 0) gameOver = true;
+
+    if (this.hasTrail) 
+    particles.push(new Partcle(this.x, this.y, this.width, this.color));
   }
   draw() {
     // ctx.fillStyle = this.color;
@@ -137,15 +139,17 @@ class Partcle {
   }
   update() {
     this.x += this.speedX;
-    this.radius += .8;
+    this.radius += 0.8;
     if (this.radius > this.maxRadius) this.markForDelition = true;
   }
   draw() {
+    ctx.save()
+    ctx.globalAlpha = 1 - this.radius / this.maxRadius
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fill();
-    console.log(particles);
+    ctx.restore()
     return this;
   }
 }
