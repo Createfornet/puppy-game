@@ -2,10 +2,12 @@
 window.addEventListener('load', function () {
   const canvas = document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
+  const enemyInterval = 2000;
   let lastTime = 0;
   let enemies = [];
-  let enemyTimer = 0
-  const enemyInterval = 2000
+  let enemyTimer = 0;
+  let score = 0;
+  let gameOver = false;
 
   class InputHandler {
     constructor() {
@@ -43,8 +45,17 @@ window.addEventListener('load', function () {
       this.timer = 0;
     }
     draw(ctx) {
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(this.x, this.y, this.width, this.height);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(
+        this.x + this.width * 0.5,
+        this.y + this.height * 0.5,
+        this.width * 0.5,
+        0,
+        Math.PI * 2
+      );
+      ctx.stroke();
       ctx.drawImage(
         this.img,
         this.frameX * this.width,
@@ -58,8 +69,18 @@ window.addEventListener('load', function () {
       );
       return this;
     }
-    update(inp, deltaTime) {
+    update(inp, deltaTime, enemies) {
       this.timer += deltaTime;
+
+      // collition detection
+      enemies.forEach(enemy => {
+        let dx = enemy.x + enemy.width * 0.5 - (this.x + this.width * 0.5);
+        let dy = enemy.y + enemy.width * 0.5 - (this.y + this.width * 0.5);
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance <= enemy.width * 0.5 + this.width * 0.5) {
+          gameOver = true;
+        }
+      });
 
       // arrow keys
       if (inp.keys.includes('ArrowRight')) this.speed = 5;
@@ -139,9 +160,23 @@ window.addEventListener('load', function () {
       this.frames = 6;
       this.frameInterval = 100;
       this.timer = 0;
-      this.speed = .4
+      this.speed = 0.4;
+      this.markForDelition = false;
     }
     draw(ctx) {
+      ctx.beginPath();
+      ctx.arc(
+        this.x + this.width * 0.5,
+        this.y + this.height * 0.5,
+        this.width * 0.5,
+        0,
+        Math.PI * 2
+      );
+      ctx.stroke();
+
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(this.x, this.y, this.width, this.height);
       ctx.drawImage(
         this.img,
         this.frameX * this.spriteWidth,
@@ -159,34 +194,53 @@ window.addEventListener('load', function () {
       this.x -= this.speed * deltaTime;
       this.timer += deltaTime;
       this.frameX = Math.floor(this.timer / this.frameInterval) % this.frames;
+      if (this.x + this.width < 0) {
+        this.markForDelition = true;
+        ++score;
+      }
     }
   }
 
   const handleEnemies = function (deltaTime) {
-    enemyTimer += deltaTime
-    if (enemyTimer > (enemyInterval + (Math.random() * 100000))){
-      enemies.push(new Enemy(canvas.width, canvas.height))
-      enemyTimer = 0
+    enemyTimer += deltaTime;
+    if (enemyTimer > enemyInterval + Math.random() * 1000) {
+      enemies.push(new Enemy(canvas.width, canvas.height));
+      enemyTimer = 0;
     }
-    enemies.forEach(enemy => enemy.draw(ctx).update(deltaTime))
+    enemies.forEach(enemy => enemy.draw(ctx).update(deltaTime));
+    enemies = enemies.filter(enemy => !enemy.markForDelition);
   };
-  const displayStatusText = function () {};
+
+  const displayStatusText = function (ctx) {
+    ctx.fillStyle = 'black';
+    ctx.font = '40px Helvetica';
+    ctx.fillText(`score: ${score}`, 20, 50);
+    if (gameOver) {
+      ctx.textAlign = 'center';
+      ctx.fillText('GAME OVER, try again', canvas.width * 0.5 - 2, 198);
+      ctx.fillStyle = 'white';
+      ctx.fillText('GAME OVER, try again', canvas.width * 0.5, 200);
+    }
+  };
 
   const input = new InputHandler();
   const player = new Player(canvas.width, canvas.height);
   const background = new Background(canvas.width, canvas.height);
-  const enemy1 = new Enemy(canvas.width, canvas.height);
 
   const animate = function (timeStamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
+
     // draw
-    background.draw(ctx)
-    .update(deltaTime);
-    player.draw(ctx).update(input, deltaTime);
-    handleEnemies(deltaTime)
-    requestAnimationFrame(animate);
+    background.draw(ctx);
+    // .update(deltaTime);
+    player.draw(ctx).update(input, deltaTime, enemies);
+
+    // functions
+    handleEnemies(deltaTime);
+    displayStatusText(ctx);
+    if (!gameOver) requestAnimationFrame(animate);
   };
   animate(0);
 });
