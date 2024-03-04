@@ -1,0 +1,24 @@
+*{
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body{
+  font-family: 'Helvetica', cursive;
+  /* overflow: hidden; */
+  background-color: black;
+}
+canvas{
+  border: none;
+}
+img{
+  display: none;
+}
+#loading{
+  color: #fff;
+  position: absolute;
+  top: 45%;
+  width: 100%;
+  text-align: center;
+  font-size: 80px;
+}
