@@ -32,11 +32,22 @@ export class Dust extends Particle {
 export class Splash extends Particle {
   constructor(game, x, y) {
     super(game);
-    this.x = x;
-    this.y = y;
-    this.speedX = Math.random();
-    this.speedY = Math.random();
-    this.size = Math.random() * 10 + 10;
+    this.size = Math.random() * 100 + 50;
+    this.x = x - this.size * 0.4;
+    this.y = y - this.size * 0.5;
+    this.speedX = Math.random() * 6 - 4;
+    this.speedY = Math.random() * 2+ 1;
+    this.gravity = 0;
+    this.img = document.getElementById('fire');
+  }
+  update() {
+    super.update();
+    this.gravity += 0.2;
+    this.y += this.gravity;
+  }
+  draw(ctx) {
+    ctx.drawImage(this.img, this.x, this.y, this.size, this.size);
+    return this;
   }
 }
 
@@ -47,7 +58,7 @@ export class Fire extends Particle {
     this.y = y;
     this.speedX = Math.random();
     this.speedY = Math.random();
-    this.size = Math.random() * 100 + 100;
+    this.size = Math.random() * 100 + 50;
     this.img = document.getElementById('fire');
     this.angle = 0;
     this.va = Math.random() * 0.2 - 0.2;
@@ -60,7 +71,13 @@ export class Fire extends Particle {
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
-    ctx.drawImage(this.img, -this.size * .5, -this.size * .5, this.size, this.size);
+    ctx.drawImage(
+      this.img,
+      -this.size * 0.5,
+      -this.size * 0.5,
+      this.size,
+      this.size
+    );
     ctx.restore();
     return this;
   }

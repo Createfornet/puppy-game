@@ -11,6 +11,7 @@ const states = {
   biting: 7,
   KO: 8,
   hitting: 9,
+  diving: 10,
 };
 
 class State {
@@ -50,6 +51,8 @@ export class Jumping extends State {
       this.game.player.setState(states.falling, 1);
     else if (input.includes('Enter'))
       this.game.player.setState(states.rolling, 2);
+    else if (input.includes('ArrowDown'))
+      this.game.player.setState(states.diving, 0);
   }
 }
 
@@ -62,6 +65,8 @@ export class Falling extends State {
   }
   handleInput(input) {
     if (this.game.player.onGround) this.game.player.setState(states.running, 1);
+    else if (input.includes('ArrowDown'))
+      this.game.player.setState(states.diving, 0);
   }
 }
 
@@ -73,7 +78,7 @@ export class Running extends State {
     this.game.player.frameY = 3;
   }
   handleInput(input) {
-    this.game.particles.push(
+    this.game.particles.unshift(
       new Dust(
         this.game,
         this.game.player.x + this.game.player.width * 0.5,
@@ -91,29 +96,33 @@ export class Running extends State {
 
 export class Dizzing extends State {
   constructor(game) {
-    super(game, 'standing', 11);
+    super(game, 'dizzing', 12);
   }
   enter() {
     this.game.player.frameY = 4;
   }
   handleInput(input) {
-    if (input.includes('ArrowRight')) this.game.player.setState(states.running);
-    else if (input.includes('ArrowDown'))
-      this.game.player.setState(states.sitting);
-    else if (input.includes('ArrowUp'))
-      this.game.player.setState(states.jumping);
+    if (this.game.player.frameX >= 10) {
+      if (this.game.player.onGround)
+        this.game.player.setState(states.running, 1);
+      else if (!this.game.player.onGround)
+        this.game.player.setState(states.falling, 1);
+    }
   }
 }
 
 export class Sitting extends State {
   constructor(game) {
-    super(game, 'standing', 5);
+    super(game, 'sitting', 5);
   }
   enter() {
     this.game.player.frameY = 5;
   }
   handleInput(input) {
-    if (input.includes('ArrowRight') || input.includes('ArrowLeft'))
+    if (
+      (input.includes('ArrowRight') || input.includes('ArrowLeft')) &&
+      !input.includes('ArrowDown')
+    )
       this.game.player.setState(states.running, 1);
     else if (input.includes('Enter'))
       this.game.player.setState(states.rolling, 2);
@@ -122,7 +131,7 @@ export class Sitting extends State {
 
 export class Rolling extends State {
   constructor(game) {
-    super(game, 'standing', 7);
+    super(game, 'rolling', 7);
   }
   enter() {
     this.game.player.frameY = 6;
@@ -145,6 +154,42 @@ export class Rolling extends State {
       this.game.player.onGround
     )
       this.game.player.vy -= 25;
+    else if (input.includes('AroowDown') && !this.game.player.onGround)
+      this.game.player.setState(states.diving, 0);
+  }
+}
+
+export class Diving extends State {
+  constructor(game) {
+    super(game, 'standing', 7);
+  }
+  enter() {
+    this.game.player.frameY = 6;
+    this.game.player.vy = 15;
+    this.player.speed -= 10;
+  }
+  handleInput(input) {
+    if (this.game.player.onGround) {
+      this.game.player.setState(states.running, 1);
+      for (let i = 0; i <= 30; i++) {
+        this.game.particles.unshift(
+          new Splash(
+            this.game,
+            this.game.player.x + this.game.player.width * 0.5,
+            this.game.player.y + this.game.player.height * 0.5
+          )
+        );
+      }
+    } else if (!input.includes('Enter') && !this.game.player.onGround)
+      this.game.particles.unshift(
+        new Fire(
+          this.game,
+          this.game.player.x + this.game.player.width * 0.5,
+          this.game.player.y + this.game.player.height * 0.5
+        )
+      );
+    else if (input.includes('Enter') && !this.game.player.onGround)
+      this.game.player.setState(states.rolling, 2);
   }
 }
 
@@ -188,10 +233,8 @@ export class Hitting extends State {
     this.game.player.frameY = 9;
   }
   handleInput(input) {
-    if (input.includes('ArrowRight')) this.game.player.setState(states.running);
-    else if (input.includes('ArrowDown'))
-      this.game.player.setState(states.sitting);
-    else if (input.includes('ArrowUp'))
-      this.game.player.setState(states.jumping);
+    if (this.game.player.onGround) 1;
+    else if (input.includes('Enter') && !this.game.player.onGround)
+      this.game.player.setState(states.rolling, 2);
   }
 }

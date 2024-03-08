@@ -3,6 +3,7 @@ import { ImputHandler } from './input9.js';
 import { Background } from './background9.js';
 import { FlyingEnemy, GroundEnemy, ClimbingEnemy } from './enemies9.js';
 import { UI } from './UI.js';
+import { CollisionAnimation } from './collisionAimation.js';
 
 window.addEventListener('load', function () {
   this.document.getElementById('loading').style.display = 'none';
@@ -21,6 +22,7 @@ window.addEventListener('load', function () {
       this.speed = 0;
       this.maxSpeed = 3;
       this.enemies = [];
+      this.collisions = []
       this.particles = []
       this.maxParticles = 50
       this.player = new Player(this);
@@ -31,6 +33,9 @@ window.addEventListener('load', function () {
       this.enemyTimer = 0;
       this.score = 0
       this.debug = true
+      this.time = 0
+      this.maxTime = 50000
+      this.gameOver = false
     }
     draw(ctx) {
       this.background.draw(ctx);
@@ -40,6 +45,9 @@ window.addEventListener('load', function () {
       return this;
     }
     update(deltaTime) {
+      this.time += deltaTime
+      if(this.time > this.maxTime) this.gameOver = true
+
       this.background.update(deltaTime);
       this.enemies.forEach(enemy => enemy.update(deltaTime));
       this.player.update(this.input.keys, deltaTime);
@@ -55,7 +63,10 @@ window.addEventListener('load', function () {
       this.particles.forEach(particle => particle.draw(ctx).update())
       this.particles = this.particles.filter(particle => !particle.markForDelition)
       if(this.particles.length > this.maxParticles) this.particles = this.particles.splice(0, this.maxParticles)
-      console.log(this.particles.length);
+    
+      // handle collisions
+      this.collisions = this.collisions.filter(collision => !collision.markForDelition)
+      this.collisions.forEach(collision => collision.draw(ctx).update(deltaTime))
     }
     addEnemy() {
       this.enemies.push(new FlyingEnemy(this));
@@ -74,7 +85,8 @@ window.addEventListener('load', function () {
     deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
     game.draw(ctx).update(deltaTime);
-    requestAnimationFrame(animate);
+    if(!game.gameOver) requestAnimationFrame(animate);
+    else game.UI.sendGameOverMessage(ctx)
   };
   animate(0);
 });
