@@ -10,7 +10,7 @@ window.addEventListener('load', function () {
   const canvas = this.document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
 
-  canvas.width = 500;
+  canvas.width = 1000;
   canvas.height = 500;
   ctx.lineWidth = 3
 
@@ -20,7 +20,7 @@ window.addEventListener('load', function () {
       this.height = height;
       this.groundMargin = 70;
       this.speed = 0;
-      this.maxSpeed = 3;
+      this.maxSpeed = 5;
       this.enemies = [];
       this.collisions = []
       this.particles = []
@@ -32,9 +32,9 @@ window.addEventListener('load', function () {
       this.enemyInterval = 1000;
       this.enemyTimer = 0;
       this.score = 0
-      this.debug = true
+      this.debug = false
       this.time = 0
-      this.maxTime = 50000
+      this.maxTime = 100000
       this.gameOver = false
     }
     draw(ctx) {

@@ -154,7 +154,7 @@ export class Rolling extends State {
       this.game.player.onGround
     )
       this.game.player.vy -= 25;
-    else if (input.includes('AroowDown') && !this.game.player.onGround)
+    else if (input.includes('ArrowDown') && !this.game.player.onGround)
       this.game.player.setState(states.diving, 0);
   }
 }
@@ -166,7 +166,6 @@ export class Diving extends State {
   enter() {
     this.game.player.frameY = 6;
     this.game.player.vy = 15;
-    this.player.speed -= 10;
   }
   handleInput(input) {
     if (this.game.player.onGround) {

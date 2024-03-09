@@ -4,12 +4,21 @@ class Enemy {
     this.frameY = 0;
     this.frameInterval = 100;
     this.timer = 0;
-    this.markForDelition = false
+    this.markForDelition = false;
   }
   draw(ctx) {
     //  debug mode
-    if (this.game.debug)
-      ctx.strokeRect(this.x, this.y, this.width, this.height);
+    if (this.game.debug) {
+      ctx.beginPath();
+      ctx.arc(
+        this.x + this.width * 0.5,
+        this.y + this.height * 0.5,
+        this.width * 0.5,
+        0,
+        360
+      );
+      ctx.stroke();
+    }
 
     ctx.drawImage(
       this.img,
@@ -28,7 +37,8 @@ class Enemy {
     this.x -= this.speedX + this.game.speed;
     this.y -= this.speedY;
     this.frameX = Math.floor(this.timer / this.frameInterval) % this.frames;
-    if (this.x + this.width < 0 || this.y + this.height < 0) this.markForDelition = true
+    if (this.x + this.width < 0 || this.y + this.height < 0)
+      this.markForDelition = true;
   }
 }
 

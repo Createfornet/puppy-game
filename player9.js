@@ -50,8 +50,17 @@ export class Player {
   }
   draw(ctx) {
     //  debug mode
-    if (this.game.debug)
-      ctx.strokeRect(this.x, this.y, this.width, this.height);
+    if (this.game.debug) {
+      ctx.beginPath();
+      ctx.arc(
+        this.x + this.width * 0.5,
+        this.y + this.height * 0.5,
+        this.width * 0.4,
+        0,
+        360
+      );
+      ctx.stroke();
+    }
 
     ctx.drawImage(
       this.img,
@@ -79,7 +88,10 @@ export class Player {
 
     // horizontal movement
     this.x += this.speed;
-    if (this.currentState !== this.states[4] && this.currentState !== this.states[5]) {
+    if (
+      this.currentState !== this.states[4] &&
+      this.currentState !== this.states[5]
+    ) {
       if (input.includes('ArrowRight')) this.speed = this.maxSpeed;
       else if (input.includes('ArrowLeft')) this.speed = -this.maxSpeed;
       else this.speed = 0;
@@ -110,15 +122,23 @@ export class Player {
   }
   checkCollision() {
     this.game.enemies.forEach(enemy => {
+      let dx = (enemy.x + enemy.width * .5) - (this.x + this.width * 0.5)
+      let dy = (enemy.y + enemy.height * .5) - (this.y + this.height * .5)
+      let distance = Math.sqrt(dx ** 2 + dy ** 2)
       if (
-        enemy.x < this.x + this.width &&
-        enemy.x + enemy.width > this.x &&
-        enemy.y < this.y + this.width &&
-        enemy.y + enemy.height > this.y
+        // enemy.x < this.x + this.width &&
+        // enemy.x + enemy.width > this.x &&
+        // enemy.y < this.y + this.width &&
+        // enemy.y + enemy.height > this.y
+        distance < this.width * 0.4 + enemy.width * 0.5
       ) {
         enemy.markForDelition = true;
         this.game.collisions.push(
-          new CollisionAnimation(this.game, enemy.x + enemy.width * .5, enemy.y + enemy.height * .5)
+          new CollisionAnimation(
+            this.game,
+            enemy.x + enemy.width * 0.5,
+            enemy.y + enemy.height * 0.5
+          )
         );
         if (
           this.currentState === this.states[6] ||

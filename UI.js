@@ -24,7 +24,6 @@ export class UI {
 
     // lives
     ctx.drawImage(document.getElementById('live'), 10, 90, 25, 25)
-    console.log(this.imgLive);
   }
   sendGameOverMessage(ctx) {
     ctx.save()
