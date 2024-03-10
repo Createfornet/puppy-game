@@ -122,15 +122,16 @@ export class Player {
   }
   checkCollision() {
     this.game.enemies.forEach(enemy => {
-      let dx = (enemy.x + enemy.width * .5) - (this.x + this.width * 0.5)
-      let dy = (enemy.y + enemy.height * .5) - (this.y + this.height * .5)
-      let distance = Math.sqrt(dx ** 2 + dy ** 2)
+      let dx = enemy.x + enemy.width * 0.5 - (this.x + this.width * 0.5);
+      let dy = enemy.y + enemy.height * 0.5 - (this.y + this.height * 0.5);
+      let distance = Math.sqrt(dx ** 2 + dy ** 2);
       if (
         // enemy.x < this.x + this.width &&
         // enemy.x + enemy.width > this.x &&
         // enemy.y < this.y + this.width &&
         // enemy.y + enemy.height > this.y
-        distance < this.width * 0.4 + enemy.width * 0.5
+        distance <
+        this.width * 0.4 + enemy.width * 0.5
       ) {
         enemy.markForDelition = true;
         this.game.collisions.push(
@@ -145,7 +146,7 @@ export class Player {
           this.currentState === this.states[10]
         ) {
           ++this.game.score;
-        } else this.setState(4, 0);
+        } else if (this.currentState !== this.states[4]) this.setState(4, 0);
       }
     });
   }

@@ -96,10 +96,11 @@ export class Running extends State {
 
 export class Dizzing extends State {
   constructor(game) {
-    super(game, 'dizzing', 12);
+    super(game, 'dizzing', 11);
   }
   enter() {
     this.game.player.frameY = 4;
+    this.game.UI.lives--;
   }
   handleInput(input) {
     if (this.game.player.frameX >= 10) {

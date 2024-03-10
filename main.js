@@ -12,7 +12,7 @@ window.addEventListener('load', function () {
 
   canvas.width = 1000;
   canvas.height = 500;
-  ctx.lineWidth = 3
+  ctx.lineWidth = 3;
 
   class Game {
     constructor(width, height) {
@@ -22,31 +22,31 @@ window.addEventListener('load', function () {
       this.speed = 0;
       this.maxSpeed = 5;
       this.enemies = [];
-      this.collisions = []
-      this.particles = []
-      this.maxParticles = 50
+      this.collisions = [];
+      this.particles = [];
+      this.maxParticles = 50;
       this.player = new Player(this);
       this.input = new ImputHandler(this);
       this.background = new Background(this);
-      this.UI = new UI(this)
+      this.UI = new UI(this);
       this.enemyInterval = 1000;
       this.enemyTimer = 0;
-      this.score = 0
-      this.debug = false
-      this.time = 0
-      this.maxTime = 100000
-      this.gameOver = false
+      this.score = 0;
+      this.debug = false;
+      this.time = 0;
+      this.maxTime = 200000;
+      this.gameOver = false;
     }
     draw(ctx) {
       this.background.draw(ctx);
       this.player.draw(ctx);
       this.enemies.forEach(enemy => enemy.draw(ctx));
-      this.UI.draw(ctx)
+      this.UI.draw(ctx);
       return this;
     }
     update(deltaTime) {
-      this.time += deltaTime
-      if(this.time > this.maxTime) this.gameOver = true
+      this.time += deltaTime;
+      if (this.time > this.maxTime) this.gameOver = true;
 
       this.background.update(deltaTime);
       this.enemies.forEach(enemy => enemy.update(deltaTime));
@@ -60,13 +60,20 @@ window.addEventListener('load', function () {
       } else this.enemyTimer += deltaTime;
 
       // handle particles
-      this.particles.forEach(particle => particle.draw(ctx).update())
-      this.particles = this.particles.filter(particle => !particle.markForDelition)
-      if(this.particles.length > this.maxParticles) this.particles = this.particles.splice(0, this.maxParticles)
-    
+      this.particles.forEach(particle => particle.draw(ctx).update());
+      this.particles = this.particles.filter(
+        particle => !particle.markForDelition
+      );
+      if (this.particles.length > this.maxParticles)
+        this.particles = this.particles.splice(0, this.maxParticles);
+
       // handle collisions
-      this.collisions = this.collisions.filter(collision => !collision.markForDelition)
-      this.collisions.forEach(collision => collision.draw(ctx).update(deltaTime))
+      this.collisions = this.collisions.filter(
+        collision => !collision.markForDelition
+      );
+      this.collisions.forEach(collision =>
+        collision.draw(ctx).update(deltaTime)
+      );
     }
     addEnemy() {
       this.enemies.push(new FlyingEnemy(this));
@@ -85,8 +92,8 @@ window.addEventListener('load', function () {
     deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
     game.draw(ctx).update(deltaTime);
-    if(!game.gameOver) requestAnimationFrame(animate);
-    else game.UI.sendGameOverMessage(ctx)
+    if (!game.gameOver) requestAnimationFrame(animate);
+    else game.UI.sendGameOverMessage(ctx);
   };
   animate(0);
 });
